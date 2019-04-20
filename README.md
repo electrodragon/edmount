@@ -1,6 +1,6 @@
 #!/bin/bash
 ###########################################
-# CHECK IF FOLDER EXIST, IF NOT, CREATE ONE
+# CREATE FOLDER IF NOT EXIST
 CFINE () {
     if [ ! -d $1 ]; then
 	sudo mkdir -p $1 1> $TRASH 2> $TRASH
