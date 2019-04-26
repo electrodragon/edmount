@@ -1,94 +1,146 @@
 #!/bin/bash
-###########################################
-# CREATE FOLDER IF NOT EXIST
-CFINE () {
+edmVersion () {
+  echo "-----------------------------------------------------"
+  echo -e " !!! ==> edmount version 3.0\n"
+  echo " !!! ==> https://github.com/electrodragon/edmount.git"
+  echo "-----------------------------------------------------"
+  exit 0
+}
+Show_Manual () {
+  echo "-----------------------------------------------------"
+  echo "Arguments:"
+  echo " v   -  Shows Version !"
+  echo " h   -  HELP"
+  echo " m   -  Mounts Disks"
+  echo " u   -  Unmounts Disks"
+  echo " s   -  Starts Lampp"
+  echo " q   -  Quits Lampp"
+  echo " ms  -  Mounts Disks and Starts Lampp"
+  echo " us  -  Unmounts Disks and Starts Lampp"
+  echo " mq  -  Mounts Disks and Stops Lampp"
+  echo " uq  -  Unmounts Disks and Stops Lampp"
+  echo "-----------------------------------------------------"
+  exit 0
+}
+Create_Folder () {
+  if [[ "$2" == 'true' ]]; then
     if [ ! -d "$1" ]; then
-	sudo mkdir -p $1 1> $TRASH 2> $TRASH
+      sudo mkdir -p $1 1> $TRASH 2> $TRASH
     fi
+  fi
 }
-# CHECK IF DISK MOUNTED, IF NOT, MOUNT ONE
-CIDMINMO () {
-    if mount | grep $1 > $TRASH; then
-	echo "$1 Already Mounted !"
-    else
-	sudo mount $1 $2
-	if mount | grep $1 > $TRASH; then
-	    echo "$1 Mounted @ $2"
-	fi
-    fi
-}
-# UNMOUNT FILE SYSTEMS STUFF...
 isMounted () {
-    if mount | grep $1 > $TRASH; then
-	echo "true"
+  if mount | grep $1 > $TRASH; then
+    echo "true"
+  else
+    echo "false"
+  fi
+}
+Mount_Disk () {
+  if [[ "$3" == "true" ]]; then
+    if [[ `isMounted $1` == 'true' ]]; then
+      echo "$1 is Already Mounted !"
     else
-	echo "false"
+      sudo mount $1 $2
+      if [[ `isMounted $1` == 'true' ]]; then
+        echo "$1 has been Mounted at $2"
+      else
+        echo "Sorry ! SomeThing Went Wrong While Mounting $1"
+      fi
     fi
+  fi
 }
-# CHECK IF DISK UNMOUNTED, IF NOT, UNMOUNT ONE
-CIDUINUO () {
-    if [ `isMounted $1` == "false" ]; then
-	echo "$1 NOT MOUNTED !"
+Unmount_Disk () {
+  if [[ "$2" == 'true' ]]; then
+    if [[ `isMounted $1` == 'true' ]]; then
+      sudo umount $1 1> $TRASH 2> $TRASH
+      if [[ `isMounted $1` == 'false' ]]; then
+        echo "$1 Successfully UnMounted !!!"
+      else
+        echo "$1 May Be Busy, Can't UnMount !"
+      fi
     else
-	sudo umount $1
-	if [ `isMounted $1` == "false" ]; then
-	    echo "$1 UN-MOUNTED SUCCESSFULLY !"
-	fi
+      echo "$1 is Already UnMounted !"
     fi
+  fi
 }
-# UNMOUNTS FUNCTION
-UMTOBYN () {
-    if [ "$2" == "y" ]; then
-	CIDUINUO $1 # UNMOUNT DISK
-    fi
-}
-# GETDUNM FUNCTON
-GETDUMN () {
-    if [ "$ARG1" != "c" ]; then
-	read -p "UNMOUNT DISKS? (y,[n]) :" DUNM
-    fi
-}
-# LAMPP FUNC
-SISXAMPP () {
-if [ "$1" == "s" ]; then
-    sudo $LAMPWAY start 2> $TRASH 1> $TRASH
-    echo "LAMPP Started !"
-elif [ "$1" == "q" ]; then
-    sudo $LAMPWAY stop 2> $TRASH 1> $TRASH
-    echo "LAMPP Stopped !"
-fi
-}
-GETLAPMP () {
-    if [ "$ARG1" != "c" ]; then
-	read -p "LAMPP ? (s/q) [c]:" LAMPP
-    fi
+Manage_LAMPP () {
+  if [[ "$2" == 'true' ]]; then
+    sudo $1 start 1> $TRASH 2> $TRASH
+    echo "LAMPP started !"
+  elif [[ "$3" == 'true' ]]; then
+    sudo $1 stop 1> $TRASH 2> $TRASH
+    echo "LAMPP quitted !"
+  fi
 }
 ############################################
-ARG1=$1
-if [ "$ARG1" == "help" ]; then
-    echo "Arguments: c, help"
-    echo "c - skips Unmount and Lampp Check"
-    exit
+if [[ "$1" == "help" || "$1" == "h" ]]; then
+  Show_Manual
+elif [[ "$1" == "v" || "$1" == "V" ]]; then
+  edmVersion
+elif [[ "$1" == "" ]]; then
+  DEFAULT_ARG="m"   # SET YOURS DEFAULT HERE !!!!!!!!!!!!
+else
+  DEFAULT_ARG=$1
 fi
 ############################################
-MYWAY="/media/`whoami`"
+MountExecution='false'
+UnMountExecution='false'
+LamppExecution='false'
+LamppQuiting='false'
+case $DEFAULT_ARG in
+  m)
+  MountExecution='true'
+    ;;
+  u)
+  UnMountExecution='true'
+    ;;
+  s)
+  LamppExecution='true'
+    ;;
+  q)
+  LamppQuiting='true'
+    ;;
+  ms)
+  MountExecution='true'
+  LamppExecution='true'
+    ;;
+  us)
+  UnMountExecution='true'
+  LamppExecution='true'
+    ;;
+  mq)
+  MountExecution='true'
+  LamppQuiting='true'
+    ;;
+  uq)
+  UnMountExecution='true'
+  LamppQuiting='true'
+    ;;
+  *)
+  echo "Wrong Argument Entered !!!"
+  Show_Manual
+    ;;
+esac
+############################################
 TRASH="/dev/null"
+LAMPWAY="/opt/lampp/lampp"
+#-------------------------
 DISK1="/dev/sda1"
 DISK2="/dev/sda2"
+#-------------------------
+MYWAY="/media/`whoami`"
 M1="${MYWAY}/c"
 M2="${MYWAY}/d"
-LAMPWAY="/opt/lampp/lampp"
 
-CFINE $M1 # CREATE M1 FOLDER
-CFINE $M2 # CREATE M2 FOLDER
+Create_Folder $M1 $MountExecution
+Create_Folder $M2 $MountExecution
 
-CIDMINMO $DISK1 $M1 # MOUNT DISK 1
-CIDMINMO $DISK2 $M2 # MOUNT DISK 2
+Mount_Disk $DISK1 $M1 $MountExecution
+Mount_Disk $DISK2 $M2 $MountExecution
 
-GETDUMN ########-UNMOUNT-############
-UMTOBYN $DISK1 $DUNM # UNMOUNT DISK 1
-UMTOBYN $DISK2 $DUNM # UNMOUNT DISK 2
+Unmount_Disk $DISK1 $UnMountExecution
+Unmount_Disk $DISK2 $UnMountExecution
 
-GETLAPMP #######-LAMPP-##############
-SISXAMPP $LAMPP # MANAGE LAMPP
+Manage_LAMPP $LAMPWAY $LamppExecution $LamppQuiting
 ##############################################
