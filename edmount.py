@@ -149,6 +149,16 @@ if len(args) == 0:
 action = args[0]
 
 if '-' in action:
+    valid_arg = False
+    for arg, desc in args_list:
+        if arg in action:
+            valid_arg = True
+            break
+
+    if not valid_arg:
+        text_warning("Invalid Argument, use -h for help")
+        exit()
+
     if 'h' in action:
         show_manual()
         exit()
@@ -170,3 +180,6 @@ if '-' in action:
 
     if 'q' in action:
         os.system('sudo /opt/lampp/lampp stop')
+
+else:
+    text_warning("Invalid Argument, use -h for help")
