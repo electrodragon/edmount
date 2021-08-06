@@ -84,11 +84,11 @@ class VolumeMountUnmount:
                     unwanted_sys_vol_info = f'{self.volume.target}/System Volume Information'
 
                     if os.path.exists(unwanted_recycle_bin):
-                        os.system(f'rm -rf \"{unwanted_recycle_bin}\"')
+                        os.system(f'rm -rf \'{unwanted_recycle_bin}\'')
                         text_blue(f'Deleted Unwanted Dir -> {unwanted_recycle_bin}!')
 
                     if os.path.exists(unwanted_sys_vol_info):
-                        os.system(f'rm -rf \"{unwanted_sys_vol_info}\"')
+                        os.system(f'rm -rf \'{unwanted_sys_vol_info}\'')
                         text_blue(f'Deleted Unwanted Dir -> {unwanted_sys_vol_info}!')
 
                 else:
