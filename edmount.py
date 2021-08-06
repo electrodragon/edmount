@@ -149,6 +149,8 @@ if len(args) == 0:
 action = args[0]
 
 if '-' in action:
+    action = action.replace('-', '')
+
     valid_arg = False
     for arg, desc in args_list:
         if arg in action:
@@ -159,27 +161,28 @@ if '-' in action:
         text_warning("Invalid Argument, use -h for help")
         exit()
 
-    if 'h' in action:
-        show_manual()
-        exit()
+    for i in range(0, len(action)):
+        if 'h' in action[i]:
+            show_manual()
+            exit()
 
-    if 'v' in action:
-        print(f"Edmount Version: {EDMOUNT_VERSION}")
-        exit()
+        if 'v' in action[i]:
+            print(f"Edmount Version: {EDMOUNT_VERSION}")
+            exit()
 
-    if 'm' in action:
-        for disk, target_path in DISKS:
-            VolumeMountUnmount(Volume(disk, target_path)).mount()
+        if 'm' in action[i]:
+            for disk, target_path in DISKS:
+                VolumeMountUnmount(Volume(disk, target_path)).mount()
 
-    if 'u' in action:
-        for disk, target_path in DISKS:
-            VolumeMountUnmount(Volume(disk, target_path)).umount()
+        if 'u' in action[i]:
+            for disk, target_path in DISKS:
+                VolumeMountUnmount(Volume(disk, target_path)).umount()
 
-    if 's' in action:
-        os.system('sudo /opt/lampp/lampp start')
+        if 's' in action[i]:
+            os.system('sudo /opt/lampp/lampp start')
 
-    if 'q' in action:
-        os.system('sudo /opt/lampp/lampp stop')
+        if 'q' in action[i]:
+            os.system('sudo /opt/lampp/lampp stop')
 
 else:
     text_warning("Invalid Argument, use -h for help")
