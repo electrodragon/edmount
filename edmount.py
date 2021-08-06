@@ -79,6 +79,18 @@ class VolumeMountUnmount:
 
                 if os.path.ismount(self.volume.target):
                     text_green(f'{self.volume.volume} has been mounted at {self.volume.target}')
+
+                    unwanted_recycle_bin = f'{self.volume.target}/$RECYCLE.BIN'
+                    unwanted_sys_vol_info = f'{self.volume.target}/System Volume Information'
+
+                    if os.path.exists(unwanted_recycle_bin):
+                        os.system(f'rm -rf \"{unwanted_recycle_bin}\"')
+                        text_blue(f'Deleted Unwanted Dir -> {unwanted_recycle_bin}!')
+
+                    if os.path.exists(unwanted_sys_vol_info):
+                        os.system(f'rm -rf \"{unwanted_sys_vol_info}\"')
+                        text_blue(f'Deleted Unwanted Dir -> {unwanted_sys_vol_info}!')
+
                 else:
                     text_fail(f'{self.volume.volume} failed to mount at {self.volume.target}')
 
