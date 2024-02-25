@@ -3,6 +3,7 @@
 import os
 import getpass
 import sys
+import shutil
 
 
 class Color:
@@ -80,16 +81,23 @@ class VolumeMountUnmount:
                 if os.path.ismount(self.volume.target):
                     text_green(f'{self.volume.volume} has been mounted at {self.volume.target}')
 
-                    unwanted_recycle_bin = f'{self.volume.target}/$RECYCLE.BIN'
-                    unwanted_sys_vol_info = f'{self.volume.target}/System Volume Information'
+                    unwanted_dirs = [
+                        '$Recycle.Bin',
+                        'System Volume Information',
+                    ]
 
-                    if os.path.exists(unwanted_recycle_bin):
-                        os.system(f'rm -rf \'{unwanted_recycle_bin}\'')
-                        text_blue(f'Deleted Unwanted Dir -> {unwanted_recycle_bin}!')
-
-                    if os.path.exists(unwanted_sys_vol_info):
-                        os.system(f'rm -rf \'{unwanted_sys_vol_info}\'')
-                        text_blue(f'Deleted Unwanted Dir -> {unwanted_sys_vol_info}!')
+                    for directory in os.listdir(self.volume.target):
+                        if directory.lower() in list(map(lambda d: d.lower(), unwanted_dirs)):
+                            unwanted_dir = os.path.join(self.volume.target, directory)
+                            if os.path.exists(unwanted_dir):
+                                try:
+                                    shutil.rmtree(unwanted_dir)
+                                    text_blue(f'Deleted Unwanted Dir -> {unwanted_dir}')
+                                except OSError as e:
+                                    text_blue(f'Something went wrong while deleting unwanted dir -> {unwanted_dir}')
+                                    print(e.filename, e.strerror)
+                            else:
+                                text_blue(f'Directory Could\'t be Located for Removing -> {unwanted_dir}')
 
                 else:
                     text_fail(f'{self.volume.volume} failed to mount at {self.volume.target}')
