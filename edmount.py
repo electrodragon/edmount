@@ -81,6 +81,7 @@ class VolumeMountUnmount:
                 if os.path.ismount(self.volume.target):
                     text_green(f'{self.volume.volume} has been mounted at {self.volume.target}')
 
+                    """
                     unwanted_dirs = [
                         '$Recycle.Bin',
                         'System Volume Information',
@@ -98,6 +99,7 @@ class VolumeMountUnmount:
                                     print(e.filename, e.strerror)
                             else:
                                 text_blue(f'Directory Could\'t be Located for Removing -> {unwanted_dir}')
+                    """
 
                 else:
                     text_fail(f'{self.volume.volume} failed to mount at {self.volume.target}')
